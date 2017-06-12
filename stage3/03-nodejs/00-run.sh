@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+BASE_DIR=$(pwd)
+
 
 ########################
 # Install dependencies #
@@ -52,7 +54,7 @@ uname -a | more
 #################
 # Checkout node #
 #################
-NODE_BUILD_PATH=$(pwd)/build/node
+NODE_BUILD_PATH=${BASE_DIR}/build/node
 git clone https://github.com/nodejs/node.git $NODE_BUILD_PATH
 cd $NODE_BUILD_PATH
 git checkout v6.10.3
@@ -125,6 +127,7 @@ make install
 #########################
 # Install node packages #
 #########################
+cd ${BASE_DIR}
 
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 # WAR for node-gyp build
@@ -143,17 +146,28 @@ export npm_config_nodedir=${NODE_BUILD_PATH}
 
 npm_install () {
   npm install -g --prefix=${TARGET_PATH} --target_arch=arm --target_platform=linux "$1"
-#on_chroot << EOF
-#npm install -g --target_arch=arm --target_platform=linux "$1"
-#EOF
 }
 
 npm --prefix=${TARGET_PATH} --target_arch=arm --target_platform=linux cache clean --force
 
 npm_install npm@5
-echo "111111111111111111"
 npm_install node-red
-echo "222222222222222222"
 npm_install coap
-echo "33333333333333333333"
+npm_install node-red-dashboard
+
+
+#######################################
+# Install WPAN service Node-RED flows #
+#######################################
+cd ${BASE_DIR}
+
+NODE_DIR=${ROOTFS_DIR}/home/pi/.node-red
+install -m 755 -d ${NODE_DIR}
+install -m 644 -D files/flows_*.json    ${NODE_DIR}/
+install -m 755 -D files/*.sh            ${NODE_DIR}/scripts/
+install -m 755 -D files/usbreset        ${ROOTFS_DIR}/usr/sbin/
+
+on_chroot << EOF
+  chown -R pi:pi /home/pi/.node-red
+EOF
 
