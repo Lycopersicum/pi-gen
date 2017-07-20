@@ -150,10 +150,15 @@ npm_install () {
 
 npm --prefix=${TARGET_PATH} --target_arch=arm --target_platform=linux cache clean --force
 
-npm_install npm@5
+npm_install npm@4.6
 npm_install node-red
 npm_install coap
 npm_install node-red-dashboard
+
+# Running `npm_install repos/node-red-contrib-juliet` fails, this is a workaround
+cd repos/node-red-contrib-juliet
+npm install --target_arch=arm --target_platform=linux
+npm_install
 
 
 #######################################
@@ -163,6 +168,7 @@ cd ${BASE_DIR}
 
 NODE_DIR=${ROOTFS_DIR}/home/pi/.node-red
 install -m 755 -d ${NODE_DIR}
+install -m 755 -d ${NODE_DIR}/scripts/
 install -m 644 -D files/flows_*.json    ${NODE_DIR}/
 install -m 755 -D files/*.sh            ${NODE_DIR}/scripts/
 install -m 755 -D files/usbreset        ${ROOTFS_DIR}/usr/sbin/
