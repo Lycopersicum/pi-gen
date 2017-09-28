@@ -6,50 +6,18 @@ BASE_DIR=$(pwd)
 ########################
 # Install dependencies #
 ########################
-dpkg --add-architecture i386
 
 apt-get update
 apt-get install -y make python build-essential
-apt-get install -y gcc-multilib g++-multilib
-apt-get install -y libc6-dev-i386
+apt-get install -y curl
 apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
-
-apt-get install -y libc6-dev
 
 apt-get --purge remove node
 apt-get --purge remove nodejs
-apt-get install -y curl
 curl -sL https://deb.nodesource.com/setup_6.x | /bin/bash -e -
 apt-get install -y nodejs
-npm install -g npm@5
-npm cache clean --force
-#find / -iname npm
-#nodejs -v
-#node -v
-#npm -v
+npm install -g npm@5.3.0
 
-ln -s /usr/include/asm-generic /usr/include/asm
-
-
-##apt-get install -y curl
-##apt-get install -y locate
-
-#echo "deb http://emdebian.org/tools/debian/ jessie main" > /etc/apt/sources.list.d/crosstools.list
-#curl http://emdebian.org/tools/debian/emdebian-toolchain-archive.key | apt-key add -
-##dpkg --add-architecture armhf
-
-##apt-get update
-##apt-cache search armhf | more
-#cat /etc/apt/sources.list | more
-uname -a | more
-#apt-get install -y make libc6 libc6-dev
-##apt-get install -y make gcc-multilib g++-multilib
-##apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
-#apt-get install -y make libc6 libc6-dev libc6-dev-i386 gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
-#apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
-
-##locate sys/cdefs.h
-##apt-get install -y python
 
 #################
 # Checkout node #
@@ -57,7 +25,7 @@ uname -a | more
 NODE_BUILD_PATH=${BASE_DIR}/build/node
 git clone https://github.com/nodejs/node.git $NODE_BUILD_PATH
 cd $NODE_BUILD_PATH
-git checkout v6.10.3
+git checkout v6.11.2
 
 
 #######################
@@ -67,23 +35,9 @@ git checkout v6.10.3
 #export BASEDIR=$(pwd)
 #export STAGING_DIR=${BASEDIR}/staging_dir
 #export V8SOURCE=${BASEDIR}/v8m-rb
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-file /usr/arm-linux-gnueabihf/lib/libstdc++.so.6*
-echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-file ${ROOTFS_DIR}/usr/lib/arm-linux-gnueabihf/libstdc++.so.6*
-echo "#################################"
 export PREFIX=arm-linux-gnueabihf-
 export LIBPATH=${ROOTFS_DIR}/usr/lib/arm-linux-gnueabihf/
 export TARGET_PATH=${ROOTFS_DIR}
-echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-ls -la ${LIBPATH}
-echo "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
-#mv /usr/arm-linux-gnueabihf/lib/ /usr/arm-linux-gnueabihf/lib_bak/
-#ln -s ${LIBPATH} /usr/arm-linux-gnueabihf/lib
-#export LIBRARY_PATH=${LIBPATH}
-#cp -r ${LIBPATH}/* /usr/arm-linux-gnueabihf/lib/.
-cp -r /usr/arm-linux-gnueabihf/lib/* ${LIBPATH}/.
-echo "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
 
 # ARM cross-compile exports
 export CC=${PREFIX}gcc
@@ -129,18 +83,6 @@ make install
 #########################
 cd ${BASE_DIR}
 
-echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-# WAR for node-gyp build
-mkdir -p ${ROOTFS_DIR}/lib/node_modules/node-red/node_modules/bcrypt
-chown -R $USER:$GROUP ${ROOTFS_DIR}/lib/node_modules/node-red/node_modules/bcrypt
-
-mkdir -p ${ROOTFS_DIR}/lib/node_modules/node-red/node_modules/bcrypt/build
-chown -R $USER:$GROUP ${ROOTFS_DIR}/lib/node_modules/node-red/node_modules/bcrypt/build
-
-ls -la ${ROOTFS_DIR}/lib/node_modules/node-red/node_modules/bcrypt/build
-ls -la ${ROOTFS_DIR}
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-
 export npm_config_arch=arm
 export npm_config_nodedir=${NODE_BUILD_PATH}
 
@@ -148,18 +90,14 @@ npm_install () {
   npm install -g --prefix=${TARGET_PATH} --target_arch=arm --target_platform=linux "$1"
 }
 
-npm --prefix=${TARGET_PATH} --target_arch=arm --target_platform=linux cache clean --force
-
-npm_install npm@4.6
+npm_install npm@5.3.0
 npm_install node-red
 npm_install coap
 npm_install node-red-dashboard
 
-# Running `npm_install repos/node-red-contrib-juliet` fails, this is a workaround
-cd repos/node-red-contrib-juliet
-npm install --target_arch=arm --target_platform=linux
-npm_install
-
+cd repos
+npm_install node-red-contrib-juliet-0.0.1.tgz
+npm_install node-red-contrib-lesley-0.0.1.tgz
 
 #######################################
 # Install WPAN service Node-RED flows #
