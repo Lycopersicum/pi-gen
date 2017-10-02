@@ -1,0 +1,17 @@
+[Unit]
+Description=REST API server for 8devices sensor network.
+Wants=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/restserver
+# Use SIGINT to stop
+KillSignal=SIGINT
+# Auto restart on crash
+Restart=on-failure
+# Tag things in the log
+SyslogIdentifier=REST
+
+[Install]
+Alias=restserver
+WantedBy=multi-user.target
