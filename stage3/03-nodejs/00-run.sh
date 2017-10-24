@@ -110,6 +110,7 @@ install -m 755 -d ${NODE_DIR}/scripts/
 install -m 644 -D files/flows_*.json    ${NODE_DIR}/
 install -m 755 -D files/*.sh            ${NODE_DIR}/scripts/
 install -m 755 -D files/usbreset        ${ROOTFS_DIR}/usr/sbin/
+install -m 755 -D files/uhubctl 	${ROOTFS_DIR}/usr/sbin
 
 on_chroot << EOF
   chown -R pi:pi /home/pi/.node-red
