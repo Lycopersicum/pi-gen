@@ -3,7 +3,7 @@
 ROOT_DIR=`dirname $0`
 
 $ROOT_DIR/wpan_reset_usb.sh
-sleep 1
+sleep 2
 
 systemctl restart wpantund.service
 sleep 1
