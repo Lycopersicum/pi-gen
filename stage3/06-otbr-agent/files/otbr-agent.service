@@ -1,0 +1,15 @@
+[Unit]
+Description=Border Router Agent
+After=wpantund.service
+ConditionPathExists=/usr/sbin/otbr-agent
+
+[Service]
+EnvironmentFile=-/etc/default/otbr-agent
+ExecStart=/usr/sbin/otbr-agent $OTBR_AGENT_OPTS
+Restart=on-failure
+RestartSec=5
+RestartPreventExitStatus=SIGKILL
+
+[Install]
+WantedBy=multi-user.target
+Alias=otbr-agent.service

@@ -1,0 +1,21 @@
+#!/bin/node
+
+var mdns = require('mdns');
+
+var execSync = require('child_process').execSync;
+var networkName = execSync('wpanctl getprop -v Network:Name').toString().trim().slice(1, -1);
+var xpanID = execSync('wpanctl getprop -v Network:XPANID').toString().trim().slice(2);
+
+const OT_BORDER_ROUTER_PORT = 49191;
+
+var options = {
+  name: networkName,
+  txtRecord: {
+    nn: networkName,
+    xp: xpanID
+  }
+};
+
+var ad = mdns.createAdvertisement('_meshcop._udp', OT_BORDER_ROUTER_PORT, options);
+ad.start();
+
