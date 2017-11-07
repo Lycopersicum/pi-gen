@@ -18,7 +18,6 @@ curl -sL https://deb.nodesource.com/setup_6.x | /bin/bash -e -
 apt-get install -y nodejs
 npm install -g npm@5.3.0
 
-
 #################
 # Checkout node #
 #################
@@ -53,8 +52,7 @@ export OBJDUMP=${PREFIX}objdump
 export NM=${PREFIX}nm
 export AS=${PREFIX}as
 export PS1="[${PREFIX}] \w$ "
-#export LDFLAGS='-Wl,-L'${LIBPATH}
-export LDFLAGS='-Wl,-rpath-link '${LIBPATH}
+export LDFLAGS="-Wl,-rpath-link ${LIBPATH} -Wl,-L${LIBPATH}"
  
 export TARGET_ARCH="-march=armv7l"
 #export TARGET_TUNE="-mtune=cortex-a8 -mfpu=neon -mfloat-abi=softfp -mthumb-interwork -mno-thumb"
@@ -86,8 +84,15 @@ cd ${BASE_DIR}
 export npm_config_arch=arm
 export npm_config_nodedir=${NODE_BUILD_PATH}
 
+NPM_USER=npm
+useradd -ms /bin/bash $NPM_USER
+
 npm_install () {
-  npm install -g --prefix=${TARGET_PATH} --target_arch=arm --target_platform=linux "$1"
+  # node-gyp fails if npm is running in root context, so install as non-root, chown and copy
+  TEMP_PATH=`su - $NPM_USER -c "mktemp -d"`
+  su $NPM_USER -c "npm install -g --prefix=${TEMP_PATH} --target_arch=arm --target_platform=linux $1"
+  chown -R root $TEMP_PATH
+  cp -r $TEMP_PATH/* $TARGET_PATH
 }
 
 npm_install npm@5.3.0
@@ -95,9 +100,11 @@ npm_install node-red
 npm_install coap
 npm_install node-red-dashboard
 
-cd repos
-npm_install node-red-contrib-juliet-0.0.1.tgz
-npm_install node-red-contrib-lesley-0.0.1.tgz
+npm_install ${BASE_DIR}/repos/node-red-contrib-juliet-0.0.1.tgz
+npm_install ${BASE_DIR}/repos/node-red-contrib-lesley-0.0.1.tgz
+
+# Resolve globally installed packages
+ln -s ${TARGET_PATH#$ROOTFS_DIR}/lib/node_modules $ROOTFS_DIR/lib/node
 
 #######################################
 # Install WPAN service Node-RED flows #
