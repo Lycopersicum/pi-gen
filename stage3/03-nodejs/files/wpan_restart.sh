@@ -2,13 +2,18 @@
 
 ROOT_DIR=`dirname $0`
 
+systemctl stop otbr-agent-mdns
+systemctl stop otbr-agent
+systemctl stop wpantund.service
+
 $ROOT_DIR/wpan_reset_usb.sh
 sleep 2
 
-systemctl restart wpantund.service
+systemctl start wpantund.service
 sleep 1
-
 $ROOT_DIR/wpan_configure.sh
 sleep 1
 
-wpanctl commissioner -e
+systemctl start otbr-agent
+systemctl start otbr-agent-mdns
+

@@ -99,6 +99,8 @@ npm_install npm@5.3.0
 npm_install node-red
 npm_install coap
 npm_install node-red-dashboard
+apt-get install -y libavahi-compat-libdnssd-dev
+npm_install mdns
 
 npm_install ${BASE_DIR}/repos/node-red-contrib-juliet-0.0.1.tgz
 npm_install ${BASE_DIR}/repos/node-red-contrib-lesley-0.0.1.tgz
@@ -116,6 +118,7 @@ install -m 755 -d ${NODE_DIR}
 install -m 755 -d ${NODE_DIR}/scripts/
 install -m 644 -D files/flows_*.json    ${NODE_DIR}/
 install -m 755 -D files/*.sh            ${NODE_DIR}/scripts/
+install -m 755 -D files/pskc            ${NODE_DIR}/scripts/
 install -m 755 -D files/usbreset        ${ROOTFS_DIR}/usr/sbin/
 install -m 755 -D files/uhubctl 	${ROOTFS_DIR}/usr/sbin
 
