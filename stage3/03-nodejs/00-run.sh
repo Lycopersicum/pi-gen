@@ -102,7 +102,6 @@ npm_install node-red-dashboard
 apt-get install -y libavahi-compat-libdnssd-dev
 npm_install mdns
 
-npm_install ${BASE_DIR}/repos/node-red-contrib-juliet-0.0.1.tgz
 npm_install ${BASE_DIR}/repos/node-red-contrib-lesley-0.0.1.tgz
 
 # Resolve globally installed packages
