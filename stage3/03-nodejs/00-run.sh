@@ -103,7 +103,7 @@ apt-get install -y libavahi-compat-libdnssd-dev
 npm_install mdns
 
 npm_install ${BASE_DIR}/repos/node-red-contrib-juliet-0.0.1.tgz
-npm_install ${BASE_DIR}/repos/node-red-contrib-lesley-0.0.1.tgz
+npm_install git+https://github.com/8devices/node-red-contrib-lesley
 
 # Resolve globally installed packages
 ln -s ${TARGET_PATH#$ROOTFS_DIR}/lib/node_modules $ROOTFS_DIR/lib/node
