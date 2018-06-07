@@ -1,1 +1,2 @@
 libjansson4 libmicrohttpd12 libgnutls30 libb64-0d
+cmake libmicrohttpd-dev libjansson-dev libcurl4-gnutls-dev
